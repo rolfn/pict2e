@@ -39,7 +39,7 @@ dist : $(DIST_FILES)
 	rm -rf $(DIST_DIR)
 
 clean :
-	$(RM) *.aux *.log *.glg *.glo *.gls *.idx *.ilg *.ind *.toc
+	$(RM) *.aux *.log *.glg *.glo *.gls *.idx *.ilg *.ind *.toc p2e-*.def
 
 veryclean : clean
 	$(RM) $(MAIN).pdf p2e-drivers.pdf $(MAIN).cls $(ARCHNAME)
