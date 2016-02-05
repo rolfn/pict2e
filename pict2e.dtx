@@ -3,7 +3,7 @@
 %
 %
 % Copyright (C) 2003-2016
-% Rolf Niepraschk, Rolf.Niepraschk@ptb.de
+% Rolf Niepraschk, Rolf.Niepraschk@gmx.de
 % Hubert Gaesslein
 % Josef Tkadlec, j.tkadlec@email.cz
 %
@@ -21,9 +21,10 @@
 % This work consists of all files listed in manifest.txt.
 %
 %
-%<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
-%<package>\ProvidesPackage{pict2e}
-%<package>  [2016/01/09 v0.2z Improved picture commands (HjG,RN,JT)]
+%<*package>
+\NeedsTeXFormat{LaTeX2e}[1999/12/01]
+\ProvidesPackage{pict2e}[2016/02/05 v0.3b Improved picture commands (HjG,RN,JT)]
+%</package>
 %
 %<*driver>
 \listfiles
@@ -32,7 +33,7 @@
 \usepackage{pict2e} % [pstarrows]
 %%\usepackage[debug]{pict2e}
 \IfFileExists{ebezier.sty}{\usepackage{ebezier}}{%
-  } % \providecommand*\cbezier{}
+} % \providecommand*\cbezier{}
 \usepackage{color}
 \usepackage{graphicx}
 \usepackage{array}
@@ -43,8 +44,8 @@
     top=20mm,bottom=30mm]{geometry}}{}
 \IfFileExists{url.sty}{\usepackage{url}}
   {\newcommand*\url[1]{\texttt{#1}}}
-\OnlyDescription
-%\AlsoImplementation
+%\OnlyDescription
+\AlsoImplementation
 \EnableCrossrefs
 \CodelineIndex
 \RecordChanges
@@ -61,7 +62,7 @@
 % \GetFileInfo{pict2e.sty}
 % \def\docdate{2016/01/09}
 %
-% \CheckSum{2155}
+% \CheckSum{2158}
 %
 % ^^A ========
 %
@@ -210,7 +211,8 @@
 %                             (2011/04/05 v0.2z). (JT)}
 % \changes{v0.3a}{2016/01/09}{11th release to CTAN
 %                             (2016/01/09 v0.3a). (JT)}
-%
+% \changes{v0.3b}{2016/02/05}{12th release to CTAN
+%                             (2016/02/05 v0.3b). (RN)}
 %
 % \DoNotIndex{\newcommand,\renewcommand,\newenvironment,\renewenvironment}
 % \DoNotIndex{\providecommand,\def,\edef,\let,\gdef,\xdef,\global,\newtoks}
@@ -599,8 +601,8 @@
 %   corresponds to \textsf{\filename} \fileversion,
 %   dated \filedate, documentation dated \docdate.}}
 % \author{%
-%   Hubert G\"a{\ss}lein\thanks{\texttt{HubertJG@open.mind.de}},
-%   Rolf Niepraschk\thanks{\texttt{Rolf.Niepraschk@ptb.de}}
+%   Hubert G\"a{\ss}lein,
+%   Rolf Niepraschk\thanks{\texttt{Rolf.Niepraschk@gmx.de}}
 %   \,and
 %   Josef Tkadlec\thanks{\texttt{j.tkadlec@email.cz}}}
 %
@@ -695,7 +697,8 @@
 %    vtex    &  x     & dvipdf   &  x? \\
 %    dvipdfm &  x     & textures &  x? \\
 %    dvipdfmx&  x     & pctexps  &  x? \\
-%    xetex   &  x     & pctex32  &  x? \\ \hline
+%    xetex   &  x     & pctex32  &  x? \\
+%    luatex ($>0.85$)   &  x  & ~ & ~ \\ \hline
 % ^^A emtex & --
 %  \end{tabular}
 %
@@ -1536,6 +1539,7 @@
 % The driver options are not much of a surprise:
 % they are similar to those of the \textsf{graphics} and
 % \textsf{color} packages.
+% \changes{v0.3b}{2016/02/05}{New option `luatex' (RN)}
 %    \begin{macrocode}
 \DeclareOption{dvips}{\def\Gin@driver{dvips.def}}
 \DeclareOption{xdvi}{\ExecuteOptions{dvips}}
@@ -1543,6 +1547,7 @@
 \DeclareOption{dvipdfm}{\def\Gin@driver{dvipdfm.def}}
 \DeclareOption{dvipdfmx}{\def\Gin@driver{dvipdfmx.def}}
 \DeclareOption{pdftex}{\def\Gin@driver{pdftex.def}}
+\DeclareOption{luatex}{\def\Gin@driver{luatex.def}}
 \DeclareOption{xetex}{\def\Gin@driver{xetex.def}}
 \DeclareOption{dvipsone}{\def\Gin@driver{dvipsone.def}}
 \DeclareOption{dviwindo}{\ExecuteOptions{dvipsone}}
@@ -2887,7 +2892,7 @@
 % of ends.
 % \changes{v0.1g}{2003/08/23}{Changed code (using%
 % \cmd{\pIIe@add@qcircle}). (HjG,RN)}
-% \changes{v03.a}{2016/01/09}{Changed code, closepath seems to be necessary.}
+% \changes{v0.3a}{2016/01/09}{Changed code, closepath seems to be necessary.}
 %    \begin{macrocode}
   \newcommand*\pIIe@circle[1]{%
     \pIIe@qcircle[1]\z@{#1}\pIIe@qcircle  \@ne{#1}%

@@ -3,9 +3,9 @@
 % p2e-drivers.dtx
 %
 %
-% Copyright (C) 2003, 2004, 2009, 2011
-% Rolf Niepraschk, Rolf.Niepraschk@ptb.de
-% Hubert Gaesslein, HubertJG@open.mind.de
+% Copyright (C) 2003-2016
+% Rolf Niepraschk, Rolf.Niepraschk@gmx.de
+% Hubert Gaesslein
 % Josef Tkadlec, j.tkadlec@email.cz
 %
 %
@@ -31,6 +31,7 @@
 %<dvips,    >\ProvidesFile{p2e-dvips.def}
 %<xdvi,     >\ProvidesFile{p2e-xdvi.def}
 %<pdftex,   >\ProvidesFile{p2e-pdftex.def}
+%<luatex,   >\ProvidesFile{p2e-luatex.def}
 %<vtex,     >\ProvidesFile{p2e-vtex.def}
 %<dvipdfm,  >\ProvidesFile{p2e-dvipdfm.def}
 %<dvipdfmx, >\ProvidesFile{p2e-dvipdfmx.def}
@@ -45,7 +46,7 @@
 %</driver>
 %
 %<cfg>\ProvidesFile{pict2e.cfg}%
-        [2011/04/05 v0.1t
+        [2016/02/05 v0.1u
 %<*!cfg>
                           Driver-dependant file (RN,HjG,JT)]
 %</!cfg>
@@ -54,13 +55,13 @@
 %<*driver>
 \documentclass{ltxdoc}
   \GetFileInfo{p2e-drivers.dtx}
-  \def\docdate{2011/04/05}
+  \def\docdate{2016/02/05}
 \begin{document}
   \title{Graphics drivers for \textsf{pict2e}\thanks
     {This document corresponds to \textsf{\filename} \fileversion,
      dated \filedate, documentation dated \docdate.}}
-  \author{Rolf Niepraschk\thanks{\texttt{Rolf.Niepraschk@ptb.de}},
-     Hubert G\"a{\ss}lein\thanks{\texttt{HubertJG@open.mind.de}}
+  \author{Rolf Niepraschk\thanks{\texttt{Rolf.Niepraschk@gmx.de}},
+     Hubert G\"a{\ss}lein,%\thanks{\texttt{HubertJG@open.mind.de}}
      \,and Josef Tkadlec\thanks{\texttt{j.tkadlec@email.cz}}}
   \date{\filedate}
  % \maketitle
@@ -69,7 +70,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{122}
+% \CheckSum{166}
 %
 % \changes{v0.1g}{2003/11/07}{Translated documentation to English (HjG)}
 % \changes{v0.1g}{2003/11/07}{Added driver \texttt{dvipdfm} (RN)}
@@ -90,6 +91,8 @@
 % \changes{v0.1r}{2004/06/25}{Small fixes in documentation (HjG)}
 % \changes{v0.1s}{2009/08/05}{Support for xetex added (JT)}
 % \changes{v0.1t}{2011/04/05}{Support for dvipdfmx added (JT)}
+% \changes{v0.1u}{2016/02/05}{Support for luatex >0.85
+%   (suggested by David Carlisle) added (RN)}
 %
 % \newcommand*\PS{PostScript}
 % \newcommand*\PDF{PDF}
@@ -262,7 +265,7 @@
 % \end{macro}
 %
 %
-% \subsection{pdftex}
+% \subsection{pdfTeX}
 %
 % A \textsf{pict2e} driver file for the \textsf{pdftex} driver.
 %
@@ -295,7 +298,39 @@
 % \end{macro}
 %
 %
-% \subsection{vtex}
+% \subsection{Lua\TeX}
+%
+% A \textsf{pict2e} driver file for the \textsf{luatex} driver.
+%
+% \begin{macro}{\pIIe@mode}
+% We are about to generate \PDF\ code.
+% (Only, if Lua\TeX\ is actually generating \PDF;
+% otherwise nothing will be output.)
+%    \begin{macrocode}
+%<*luatex>
+\begingroup
+  \ifnum\outputmode>0\relax
+    \gdef\pIIe@mode{2}
+  \fi
+\endgroup
+%    \end{macrocode}
+% \end{macro}
+%
+% \begin{macro}{\pIIe@code}
+% The save\slash restore operators are necessary here to prevent the
+% change of the CTM (scaling and rotation operations) that
+% \textsf{pict2e} inserts from propagating.
+%    \begin{macrocode}
+\ifcase\pIIe@mode\relax \or\or
+  \def\pIIe@code#1{\pdfextension literal{ q #1 Q }}
+  \protected\edef\pIIe@pdfliteral{\pdfextension literal}
+\fi
+%</luatex>
+%    \end{macrocode}
+% \end{macro}
+%
+%
+% \subsection{V\TeX}
 %
 % A \textsf{pict2e} driver file for the \textsf{vtex} driver.
 %
@@ -544,34 +579,50 @@
 %% Select an appropriate default driver.
 \begingroup
   \chardef\x=0 %
-  % check pdfTeX
-  \@ifundefined{pdfoutput}{}{%
-    \ifcase\pdfoutput
+  % check luatex
+  \ifx\luatexversion\@undefined
+    % check pdfTeX
+    \@ifundefined{pdfoutput}{}{%
+      \ifcase\pdfoutput
+      \else
+        \chardef\x=1 %
+      \fi
+    }%
+    % check VTeX
+    \@ifundefined{OpMode}{}{%
+      \chardef\x=2 %
+    }%
+    % check XeTeX
+    \@ifundefined{XeTeXrevision}{}{%
+      \chardef\x=3 %
+    }%
+  \else
+    \ifnum\luatexversion>85
+      \ifnum\outputmode>0
+        \chardef\x=4\relax
+      \fi
     \else
-      \chardef\x=1 %
+      \ifnum\pdfoutput>0
+        \chardef\x=1\relax
+      \fi
     \fi
-  }%
-  % check VTeX
-  \@ifundefined{OpMode}{}{%
-    \chardef\x=2 %
-  }%
-  % check XeTeX
-  \@ifundefined{XeTeXrevision}{}{%
-    \chardef\x=3 %
-  }%
+  \fi
 \expandafter\endgroup
 \ifcase\x
-  % default case
+  % 0: default case
   \ExecuteOptions{dvips}%
 \or
-  % pdfTeX is running in pdf mode
+  % 1: pdfTeX is running in pdf mode
   \ExecuteOptions{pdftex}%
 \or
-  % VTeX is running
+  % 2: VTeX is running
   \ExecuteOptions{vtex}%
-\else
-  % XeTeX is running
+\or
+  % 3: XeTeX is running
   \ExecuteOptions{xetex}%
+\or
+  % 4: LuaTeX (> 0.85) is running
+  \ExecuteOptions{luatex}%
 \fi
 %    \end{macrocode}
 % You can also specify other options to the \textsf{pict2e} package in
