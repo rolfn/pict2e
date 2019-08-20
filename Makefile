@@ -1,4 +1,4 @@
-# Rolf Niepraschk, 2016-02-05, Rolf.Niepraschk@gmx.de
+# Rolf Niepraschk, 2017-10-08, Rolf.Niepraschk@gmx.de
 
 .SUFFIXES : .dtx .ins .tex .ltx .dvi .ps .pdf .eps
 
@@ -29,6 +29,7 @@ $(MAIN).pdf : $(MAIN).dtx $(MAIN).sty
 		$(basename $<).glo
 	makeindex -s gind.ist -t $(basename $<).ilg -o $(basename $<).ind \
 		$(basename $<).idx
+	$(LATEX) $<
 	$(LATEX) $<
 	$(LATEX) $<
 
