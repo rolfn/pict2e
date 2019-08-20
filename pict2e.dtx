@@ -23,7 +23,7 @@
 %
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[1999/12/01]
-\ProvidesPackage{pict2e}[2016/02/05 v0.3b Improved picture commands (HjG,RN,JT)]
+\ProvidesPackage{pict2e}[2019/08/20 v0.3c Improved picture commands (HjG,RN,JT)]
 %</package>
 %
 %<*driver>
@@ -2357,6 +2357,8 @@
 % \subsection{High-level operations}
 %
 % \begin{macro}{\pIIe@checkslopeargs}
+% \changes{v0.3c}{2019/08/20}{\cmd{\edef} for parameters stored in macros -- 
+%   suggested by Phelype Oleinik (RN)} 
 % Common code for \cmd{\line} and \cmd{\vector}.
 %    \begin{macrocode}
   \newcommand*\pIIe@checkslopeargsline[2]{%
@@ -2364,8 +2366,8 @@
   \newcommand*\pIIe@checkslopeargsvector[2]{%
     \pIIe@checkslopeargs{#1}{#2}{1000}}
   \newcommand*\pIIe@checkslopeargs[3]{%
-    \def\@tempa{#1}\expandafter\pIIe@checkslopearg\@tempa.:{#3}%
-    \def\@tempa{#2}\expandafter\pIIe@checkslopearg\@tempa.:{#3}%
+    \edef\@tempa{#1}\expandafter\pIIe@checkslopearg\@tempa.:{#3}%
+    \edef\@tempa{#2}\expandafter\pIIe@checkslopearg\@tempa.:{#3}%
 %    \end{macrocode}
 % A bit incompatible with \SL: slope \((0,0)\) raises an error.
 %    \begin{macrocode}
@@ -2374,7 +2376,7 @@
     \def\@tempa{#1}%
     \ifx\@tempa\empty\def\@tempa{0}\fi
     \ifx\@tempa\space\def\@tempa{0}\fi
-    \ifnum\ifnum\@tempa<\z@-\fi\@tempa>#3\@badlinearg \fi}
+    \ifnum\ifnum\@tempa<\z@-\fi\@tempa>#3 \@badlinearg \fi}
   \def\@badlinearg{\PackageError
     {pict2e}{Bad \protect\line\space or \protect\vector\space argument}{}}
 %    \end{macrocode}
@@ -2384,7 +2386,7 @@
 % \label{sec:implementation:line}
 %
 % \begin{macro}{\line}
-% \changes{v0.2l}{2004/04/08}{Macro added (RNH/HjG)}
+% \changes{v0.2l}{2004/04/08}{Macro added (RN/HjG)}
 % \cmd{\line}\parg{x,y}\marg{$l_x$}:
 % \changes{v0.2o}{2004/06/25}{Use \cmd{\pIIe@checkslopeargs} (HjG)}
 % \changes{v0.2t}{2008/05/11}{All lines by \cmd{\@sline} (JT)}
