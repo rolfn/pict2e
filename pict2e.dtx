@@ -63,7 +63,7 @@
 % \GetFileInfo{pict2e.sty}
 % \def\docdate{2020/05/31}
 %
-% \CheckSum{2200}
+% \CheckSum{2175}
 %
 % ^^A ========
 %
@@ -1617,17 +1617,14 @@
   }}
 \DeclareOption{pstarrows}{\AtEndOfPackage{%
   \let\pIIe@vector=\pIIe@vector@pst
-  \iffalse
-    \def\pIIe@FAL{1.4}%
-    \def\pIIe@FAW{2}%
-    \def\pIIe@CAW{1.5pt}%
-    \def\pIIe@FAI{0.4}%
-  \else % These are the ltxarrows values, which looks better. (RN)
+%    \end{macrocode}
+% Instead of the PSTricks ($FAL=1.4$, $FAW=2$, $CAW=1.5$pt, $FAI=0.4$) values,
+% we also use the \LaTeX values here, since the result looks better. (RN)
+%    \begin{macrocode}
     \def\pIIe@FAL{1.52}%
     \def\pIIe@FAW{3.2}%
     \def\pIIe@CAW{1.5pt}%
     \def\pIIe@FAI{0.25}%
-  \fi
   }}
 %    \end{macrocode}
 %
@@ -2418,7 +2415,7 @@
 %    \begin{macrocode}
   \newcommand*\pIIe@sline{%
 %    \end{macrocode}
-% Calculation of the endpoints \cmd{\@xdim},\cmd{\@xdim}
+% Calculation of the endpoints \cmd{\@xdim}, \cmd{\@ydim}
 % (used for \cmd{\line} only).
 %    \begin{macrocode}
     \ifdim\@tempdima=\z@
@@ -2544,20 +2541,19 @@
 %    \begin{macrocode}
   \newcommand*\pIIe@FAL{}\newcommand*\pIIe@FAW{}\newcommand*\pIIe@CAW{}
   \newcommand*\pIIe@FAI{}
-  \newcommand*\pIIe@@firstnum{}\newcommand*\pIIe@@secondnum{}
-  \iffalse% the pstricks values gives too small arrows. (RN)
-  \AtBeginDocument{%
-    \@ifpackageloaded{pstricks}{%
-      \def\pIIe@FAL{\psk@arrowlength}%
-      \def\pIIe@FAW{\expandafter\pIIe@@secondnum\psk@arrowsize}%
-      \def\pIIe@CAW{\expandafter\pIIe@@firstnum\psk@arrowsize}%
-      \def\pIIe@FAI{\psk@arrowinset}%
-      \def\pIIe@@firstnum#1 #2 {#1\p@}%
-      \def\pIIe@@secondnum#1 #2 {#2}%
-    }{}%
-  }
-  \fi
 %    \end{macrocode}
+% ^^A  \newcommand*\pIIe@@firstnum{}\newcommand*\pIIe@@secondnum{}
+% ^^A  The pstricks values gives too small arrows. (RN)
+% ^^A  \AtBeginDocument{%
+% ^^A    \@ifpackageloaded{pstricks}{%
+% ^^A     \def\pIIe@FAL{\psk@arrowlength}%
+% ^^A      \def\pIIe@FAW{\expandafter\pIIe@@secondnum\psk@arrowsize}%
+% ^^A      \def\pIIe@CAW{\expandafter\pIIe@@firstnum\psk@arrowsize}%
+% ^^A      \def\pIIe@FAI{\psk@arrowinset}%
+% ^^A      \def\pIIe@@firstnum#1 #2 {#1\p@}%
+% ^^A      \def\pIIe@@secondnum#1 #2 {#2}%
+% ^^A    }{}%
+% ^^A  }
 % \end{macro}
 % \end{macro}
 % \end{macro}
