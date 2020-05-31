@@ -28,7 +28,7 @@
 %
 %<*driver>
 \listfiles
-\errorcontextlines5
+\setcounter{errorcontextlines}{5}
 \documentclass{ltxdoc}
 \usepackage{pict2e} % [pstarrows]
 %%\usepackage[debug]{pict2e}
@@ -37,7 +37,8 @@
 \usepackage{color}
 \usepackage{graphicx}
 \usepackage{array}
-%%\usepackage{pstcol}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
 \usepackage{longtable}
 \IfFileExists{geometry.sty}{%
   \usepackage[left=\marginparwidth,textwidth=1.15\textwidth,%
@@ -60,9 +61,9 @@
 % \fi
 %
 % \GetFileInfo{pict2e.sty}
-% \def\docdate{2016/01/09}
+% \def\docdate{2020/05/31}
 %
-% \CheckSum{2149}
+% \CheckSum{2200}
 %
 % ^^A ========
 %
@@ -184,6 +185,7 @@
 % \changes{v0.2y}{2011/04/05}{Support for dvipdfmx. (JT)}
 % \changes{v0.2z}{2014/01/12}{Conflict wit epic, eepic solved. (JT)}
 % \changes{v0.3a}{2016/01/09}{Local line types, documentation fixes. (JT)}
+% \changes{v0.3d}{2020/05/31}{\cmd{\@sline} renamed \cmd{\pIIe@sline} (RN)}
 % \fi
 %
 % \changes{v0.1a}{2003/07/18}{First version. (RN)}
@@ -2397,29 +2399,56 @@
     \@tempdima=#1pt\relax \@tempdimb=#2pt\relax
     \@linelen #3\unitlength
     \ifdim\@linelen<\z@ \@badlinearg \else
-      \ifdim\@tempdima=\z@
-        \ifdim\@tempdimb<\z@\@linelen-\@linelen\fi
-        \@ydim=\@linelen
-        \@xdim=\z@
-      \else
-        \ifdim\@tempdima<\z@\@linelen-\@linelen\fi
-        \ifdim\@tempdimb=\z@
-          \@xdim=\@linelen
-          \@ydim=\z@
-        \else
-          \pIIe@divide\@tempdimb\@tempdima\dimen@
-          \@ydim=\strip@pt\dimen@\@linelen
-          \@xdim=\@linelen
-        \fi
-      \fi
+      \pIIe@sline
       \pIIe@moveto\z@\z@
       \pIIe@lineto\@xdim\@ydim
       \pIIe@strokeGraph
+%    \end{macrocode}
+% Simulated bounding box
+%    \begin{macrocode}
+      \box\@tempboxa
     \fi
     \endgroup}
 %    \end{macrocode}
 % \end{macro}
-%
+% \begin{macro}{\pIIe@sline}
+% Common code for \cmd{\line} and \cmd{\vector}.
+% \changes{v0.3d}{2020/05/31}{Simulated bounding boxes for \cmd{\line}
+%   and \cmd{\vector} (RN)}
+%    \begin{macrocode}
+  \newcommand*\pIIe@sline{%
+%    \end{macrocode}
+% Calculation of the endpoints \cmd{\@xdim},\cmd{\@xdim}
+% (used for \cmd{\line} only).
+%    \begin{macrocode}
+    \ifdim\@tempdima=\z@
+      \ifdim\@tempdimb<\z@\@linelen-\@linelen\fi
+      \@ydim=\@linelen
+      \@xdim=\z@
+    \else
+      \ifdim\@tempdima<\z@\@linelen-\@linelen\fi
+      \ifdim\@tempdimb=\z@
+        \@xdim=\@linelen
+        \@ydim=\z@
+      \else
+        \pIIe@divide\@tempdimb\@tempdima\dimen@
+        \@ydim=\strip@pt\dimen@\@linelen
+        \@xdim=\@linelen
+      \fi
+    \fi
+%    \end{macrocode}
+% Prepare a box that can be used as a bounding box for \cmd{\line} and
+% \cmd{\vector} to achieve the same behavior as standard \LaTeX\ outside
+% of a picture environment.
+%    \begin{macrocode}
+    \@ovxx=\ifnum\@xdim=\z@ \z@\else\@linelen\fi
+    \@ovyy=\ifnum\@ydim<\z@ \z@\else\@ydim\fi
+    \@ovdy=\ifnum\@ydim<\z@ -\@ydim\else\z@\fi
+    \setbox\@tempboxa\hbox{%
+      \vrule\@height \@ovyy \@depth \@ovdy \@width \z@
+      \vrule\@height \z@ \@depth \z@ \@width \@ovxx}}
+%    \end{macrocode}
+% \end{macro}
 % \subsubsection{Vector}
 % \label{sec:implementation:vector}
 %
@@ -2443,10 +2472,11 @@
     \@tempdima=#1pt\relax \@tempdimb=#2pt\relax
     \@linelen#3\unitlength
     \ifdim\@linelen<\z@ \@badlinearg \else
+      \pIIe@sline
+      \@linelen#3\unitlength
       \pIIe@pyth{\@tempdima}{\@tempdimb}\dimen@
-      \ifdim\@tempdima=\z@
-      \else\ifdim\@tempdimb=\z@
-        \else
+      \ifdim\@tempdima=\z@ \else
+        \ifdim\@tempdimb=\z@ \else
 %    \end{macrocode}
 % This calculation is only necessary, if the vector is actually
 % sloped.
@@ -2470,6 +2500,10 @@
 %    \begin{macrocode}
       \pIIe@vector
       \pIIe@fillGraph
+%    \end{macrocode}
+% Simulated bounding box
+%    \begin{macrocode}
+      \box\@tempboxa
     \fi
     \endgroup}
 %    \end{macrocode}
