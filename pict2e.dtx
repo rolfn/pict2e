@@ -23,7 +23,7 @@
 %
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[1999/12/01]
-\ProvidesPackage{pict2e}[2019/08/20 v0.3c Improved picture commands (HjG,RN,JT)]
+\ProvidesPackage{pict2e}[2020/05/31 v0.3d Improved picture commands (HjG,RN,JT)]
 %</package>
 %
 %<*driver>
@@ -62,7 +62,7 @@
 % \GetFileInfo{pict2e.sty}
 % \def\docdate{2016/01/09}
 %
-% \CheckSum{2158}
+% \CheckSum{2149}
 %
 % ^^A ========
 %
@@ -2392,37 +2392,30 @@
 % \changes{v0.2t}{2008/05/11}{All lines by \cmd{\@sline} (JT)}
 %    \begin{macrocode}
   \def\line(#1,#2)#3{%
+    \begingroup
     \pIIe@checkslopeargsline{#1}{#2}%
     \@tempdima=#1pt\relax \@tempdimb=#2pt\relax
     \@linelen #3\unitlength
-    \ifdim\@linelen<\z@ \@badlinearg \else \@sline \fi}
-%    \end{macrocode}
-% \end{macro}
-%
-% \begin{macro}{\@sline}
-% (The implementation here is different from \cmd{\vector}!)
-%    \begin{macrocode}
-  \def\@sline{%
-    \begingroup
-    \ifdim\@tempdima=\z@
-      \ifdim\@tempdimb<\z@\@linelen-\@linelen\fi
-      \@ydim=\@linelen
-      \@xdim=\z@
-    \else
-      \ifdim\@tempdimb=\z@
-        \ifdim\@tempdima<\z@\@linelen-\@linelen\fi
-        \@xdim=\@linelen
-        \@ydim=\z@
+    \ifdim\@linelen<\z@ \@badlinearg \else
+      \ifdim\@tempdima=\z@
+        \ifdim\@tempdimb<\z@\@linelen-\@linelen\fi
+        \@ydim=\@linelen
+        \@xdim=\z@
       \else
-        \ifnum\@tempdima<\z@\@linelen-\@linelen\fi
-        \pIIe@divide\@tempdimb\@tempdima\dimen@
-        \@ydim=\strip@pt\dimen@\@linelen
-        \@xdim=\@linelen
+        \ifdim\@tempdima<\z@\@linelen-\@linelen\fi
+        \ifdim\@tempdimb=\z@
+          \@xdim=\@linelen
+          \@ydim=\z@
+        \else
+          \pIIe@divide\@tempdimb\@tempdima\dimen@
+          \@ydim=\strip@pt\dimen@\@linelen
+          \@xdim=\@linelen
+        \fi
       \fi
+      \pIIe@moveto\z@\z@
+      \pIIe@lineto\@xdim\@ydim
+      \pIIe@strokeGraph
     \fi
-    \pIIe@moveto\z@\z@
-    \pIIe@lineto\@xdim\@ydim
-    \pIIe@strokeGraph
     \endgroup}
 %    \end{macrocode}
 % \end{macro}
