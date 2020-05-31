@@ -63,7 +63,7 @@
 % \GetFileInfo{pict2e.sty}
 % \def\docdate{2020/05/31}
 %
-% \CheckSum{2200}
+% \CheckSum{2175}
 %
 % ^^A ========
 %
@@ -2418,7 +2418,7 @@
 %    \begin{macrocode}
   \newcommand*\pIIe@sline{%
 %    \end{macrocode}
-% Calculation of the endpoints \cmd{\@xdim},\cmd{\@xdim}
+% Calculation of the endpoints \cmd{\@xdim}, \cmd{\@ydim}
 % (used for \cmd{\line} only).
 %    \begin{macrocode}
     \ifdim\@tempdima=\z@
@@ -2545,19 +2545,18 @@
   \newcommand*\pIIe@FAL{}\newcommand*\pIIe@FAW{}\newcommand*\pIIe@CAW{}
   \newcommand*\pIIe@FAI{}
   \newcommand*\pIIe@@firstnum{}\newcommand*\pIIe@@secondnum{}
-  \iffalse% the pstricks values gives too small arrows. (RN)
-  \AtBeginDocument{%
-    \@ifpackageloaded{pstricks}{%
-      \def\pIIe@FAL{\psk@arrowlength}%
-      \def\pIIe@FAW{\expandafter\pIIe@@secondnum\psk@arrowsize}%
-      \def\pIIe@CAW{\expandafter\pIIe@@firstnum\psk@arrowsize}%
-      \def\pIIe@FAI{\psk@arrowinset}%
-      \def\pIIe@@firstnum#1 #2 {#1\p@}%
-      \def\pIIe@@secondnum#1 #2 {#2}%
-    }{}%
-  }
-  \fi
 %    \end{macrocode}
+% ^^A  The pstricks values gives too small arrows. (RN)
+% ^^A  \AtBeginDocument{%
+% ^^A    \@ifpackageloaded{pstricks}{%
+% ^^A     \def\pIIe@FAL{\psk@arrowlength}%
+% ^^A      \def\pIIe@FAW{\expandafter\pIIe@@secondnum\psk@arrowsize}%
+% ^^A      \def\pIIe@CAW{\expandafter\pIIe@@firstnum\psk@arrowsize}%
+% ^^A      \def\pIIe@FAI{\psk@arrowinset}%
+% ^^A      \def\pIIe@@firstnum#1 #2 {#1\p@}%
+% ^^A      \def\pIIe@@secondnum#1 #2 {#2}%
+% ^^A    }{}%
+% ^^A  }
 % \end{macro}
 % \end{macro}
 % \end{macro}
