@@ -3092,6 +3092,7 @@
 %
 % \begin{macro}{\oval}
 % \begin{macro}{\pIIe@maxovalrad}
+% \begin{macro}{\pIIe@oval}
 % The variant of \cmd{\oval} defined here takes an additional optional
 % argument, which specifies the maximum radius of the rounded corners
 % (default = 20\,pt, as given above).
@@ -3101,16 +3102,19 @@
 % \changes{v0.2n}{2004/04/22}{Moved radius test from \cmd{\pIIe@def@UL}
 %     (RN/HjG)}
 % \changes{v0.2n}{2004/04/22}{Allow zero diameter (RN/HjG)}
+% \changes{v0.3d}{2020/05/31}{Allow spaces after the first optional Argument
+% suggested by FMi (RN)}
 %    \begin{macrocode}
   \newcommand*\pIIe@maxovalrad{}
+  \newcommand*\pIIe@oval{}
+  \def\pIIe@oval#1(#2,#3){\@ifnextchar[{\@oval(#2,#3)}{\@oval(#2,#3)[]}}
   \renewcommand*\oval[1][\maxovalrad]{%
     \begingroup \pIIe@defaultUL\pIIe@maxovalrad{#1}%
       \ifdim\pIIe@maxovalrad<\z@ \pIIe@badcircarg \fi
 %    \end{macrocode}
 % Can't close the group here, since arguments must be parsed.
-% (This is done by calling the saved original.)
 %    \begin{macrocode}
-      \pIIe@oldoval}
+      \pIIe@oval}
 %    \end{macrocode}
 % \end{macro}
 % \end{macro}
