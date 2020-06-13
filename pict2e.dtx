@@ -2,7 +2,7 @@
 %
 %
 %
-% Copyright (C) 2003-2016
+% Copyright (C) 2003-2020
 % Rolf Niepraschk, Rolf.Niepraschk@gmx.de
 % Hubert Gaesslein, hubertjg@gmx.de
 % Josef Tkadlec, j.tkadlec@email.cz
@@ -23,7 +23,7 @@
 %
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[1999/12/01]
-\ProvidesPackage{pict2e}[2020/05/31 v0.3d Improved picture commands (HjG,RN,JT)]
+\ProvidesPackage{pict2e}[2020/06/13 v0.3d Improved picture commands (HjG,RN,JT)]
 %</package>
 %
 %<*driver>
@@ -45,6 +45,8 @@
     top=20mm,bottom=30mm]{geometry}}{}
 \IfFileExists{url.sty}{\usepackage{url}}
   {\newcommand*\url[1]{\texttt{#1}}}
+\usepackage{hypdoc}
+
 %\OnlyDescription
 \AlsoImplementation
 \EnableCrossrefs
@@ -61,9 +63,9 @@
 % \fi
 %
 % \GetFileInfo{pict2e.sty}
-% \def\docdate{2020/05/31}
+% \def\docdate{2020/06/13}
 %
-% \CheckSum{2167}
+% \CheckSum{2157}
 %
 % ^^A ========
 %
@@ -185,7 +187,7 @@
 % \changes{v0.2y}{2011/04/05}{Support for dvipdfmx. (JT)}
 % \changes{v0.2z}{2014/01/12}{Conflict wit epic, eepic solved. (JT)}
 % \changes{v0.3a}{2016/01/09}{Local line types, documentation fixes. (JT)}
-% \changes{v0.3d}{2020/05/31}{\cmd{\@sline} renamed \cmd{\pIIe@sline} (RN)}
+% \changes{v0.3d}{2020/06/13}{\cmd{\@sline} renamed \cmd{\pIIe@sline} (RN)}
 % \fi
 %
 % \changes{v0.1a}{2003/07/18}{First version. (RN)}
@@ -1596,36 +1598,44 @@
 }
 %    \end{macrocode}
 % \end{macro}
-% Arrow shape options.
-% The values for \LaTeX-style arrows are ``hand optimized'';
-% they should be regarded as experimental,
-% i.e., they may change in future versions of this package.
-% The values for \PSTricks-style arrows are the default ones used by
-% that bundle.
-% If the \textsf{pstricks} package is actually loaded, then
-% \textsf{pict2e} will obey the current values of the corresponding
-% internal \PSTricks\ parameters;
-% this feature should be regarded as experimental,
-% i.e., it may change in future versions of this package.
+% \begin{macro}{\pIIe@FAL}
+% \begin{macro}{\pIIe@FAW}
+% \begin{macro}{\pIIe@CAW}
+% \begin{macro}{\pIIe@FAI}
+% Some macros to parametrize the shape of the vector outline.
+% The following values are “hand optimized” with the aim of emulating
+% \LaTeX-style arrows. They also seem suitable for our \PSTricks-style arrows.
+% See Figures~\ref{fig:vector:ltx} and~\ref{fig:vector:pst}.
+% \changes{v0.1x}{2003/11/27}{Introduce ``inset''. (RN,HjG)}
 %    \begin{macrocode}
-\DeclareOption{ltxarrows}{\AtEndOfPackage{%
-  \let\pIIe@vector=\pIIe@vector@ltx
-  \def\pIIe@FAL{1.52}%
-  \def\pIIe@FAW{3.2}%
-  \def\pIIe@CAW{1.5pt}%
-  \def\pIIe@FAI{0.25}%
-  }}
-\DeclareOption{pstarrows}{\AtEndOfPackage{%
-  \let\pIIe@vector=\pIIe@vector@pst
+\newcommand*\pIIe@FAL{1.52}%
+\newcommand*\pIIe@FAW{3.2}%
+\newcommand*\pIIe@CAW{1.5pt}%
+\newcommand*\pIIe@FAI{0.25}%
 %    \end{macrocode}
-% Instead of the PSTricks values ($FAL=1.4$, $FAW=2$, $CAW=1.5$pt, $FAI=0.4$),
-% we also use the \LaTeX values here, since the result looks better. (RN)
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+% \begin{macro}{\ltxarrows}
+% \begin{macro}{\pstarrows}
+% The following user-level macros can be used to change the arrow style
+% (\LaTeX-style is the default).
+% \changes{v0.3d}{2020/06/13}{New user-level macros \cmd{\ltxarrows}
+% and \cmd{\pstarrows}. (RN)} 
 %    \begin{macrocode}
-    \def\pIIe@FAL{1.52}%
-    \def\pIIe@FAW{3.2}%
-    \def\pIIe@CAW{1.5pt}%
-    \def\pIIe@FAI{0.25}%
-  }}
+\newcommand*\ltxarrows{%
+  \let\pIIe@vector=\pIIe@vector@ltx
+}
+\newcommand*\pstarrows{%
+  \let\pIIe@vector=\pIIe@vector@pst
+}
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+%    \begin{macrocode}
+\DeclareOption{ltxarrows}{\AtEndOfPackage{\ltxarrows}}
+\DeclareOption{pstarrows}{\AtEndOfPackage{\pstarrows}}
 %    \end{macrocode}
 %
 % \begin{macro}{\pIIe@debug@comment}
@@ -2410,7 +2420,7 @@
 % \end{macro}
 % \begin{macro}{\pIIe@sline}
 % Common code for \cmd{\line} and \cmd{\vector}.
-% \changes{v0.3d}{2020/05/31}{Simulated bounding boxes for \cmd{\line}
+% \changes{v0.3d}{2020/06/13}{Simulated bounding boxes for \cmd{\line}
 %   and \cmd{\vector} suggested by Donald Arseneau (RN)}
 %    \begin{macrocode}
   \newcommand*\pIIe@sline{%
@@ -2516,50 +2526,6 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{macro}{\pIIe@FAL}
-% \begin{macro}{\pIIe@FAW}
-% \begin{macro}{\pIIe@CAW}
-% \begin{macro}{\pIIe@FAI}
-% \changes{v0.1x}{2003/11/27}{Introduce ``inset''. (RN,HjG)}
-% \begin{macro}{\pIIe@@firstnum}
-% \changes{v0.1x}{2003/11/27}{New ancillary macro (RN,HjG)}
-% \begin{macro}{\pIIe@@secondnum}
-% \changes{v0.1x}{2003/11/27}{New ancillary macro (RN,HjG)}
-% Some macros to parametrize the shape of the vector outline.
-% ^^A Should be user-level macros or changeable via key-value interface.
-% ^^A (Defered to future version.)
-% See Figures~\ref{fig:vector:ltx} and~\ref{fig:vector:pst}.
-%\iffalse
-% Note that when the \textsf{pstricks} package has been loaded, its
-% arrow-drawing parameters will be dynamically evaluated;
-% of course,
-% this is only useful with the \textsf{pstarrows} package
-% option.
-% probably\slash most likely not useful with the default
-% \textsf{ltxarrows} package option.
-% \fi
-%    \begin{macrocode}
-  \newcommand*\pIIe@FAL{}\newcommand*\pIIe@FAW{}\newcommand*\pIIe@CAW{}
-  \newcommand*\pIIe@FAI{}
-%    \end{macrocode}
-% ^^A  \newcommand*\pIIe@@firstnum{}\newcommand*\pIIe@@secondnum{}
-% ^^A  The pstricks values gives too small arrows. (RN)
-% ^^A  \AtBeginDocument{%
-% ^^A    \@ifpackageloaded{pstricks}{%
-% ^^A     \def\pIIe@FAL{\psk@arrowlength}%
-% ^^A      \def\pIIe@FAW{\expandafter\pIIe@@secondnum\psk@arrowsize}%
-% ^^A      \def\pIIe@CAW{\expandafter\pIIe@@firstnum\psk@arrowsize}%
-% ^^A      \def\pIIe@FAI{\psk@arrowinset}%
-% ^^A      \def\pIIe@@firstnum#1 #2 {#1\p@}%
-% ^^A      \def\pIIe@@secondnum#1 #2 {#2}%
-% ^^A    }{}%
-% ^^A  }
-% \end{macro}
-% \end{macro}
-% \end{macro}
-% \end{macro}
-% \end{macro}
-% \end{macro}
 %
 % \paragraph{\LaTeX\ version}
 %
@@ -3102,7 +3068,7 @@
 % \changes{v0.2n}{2004/04/22}{Moved radius test from \cmd{\pIIe@def@UL}
 %     (RN/HjG)}
 % \changes{v0.2n}{2004/04/22}{Allow zero diameter (RN/HjG)}
-% \changes{v0.3d}{2020/05/31}{Allow spaces after the first optional Argument
+% \changes{v0.3d}{2020/06/13}{Allow spaces after the first optional Argument
 % suggested by FMi (RN)}
 %    \begin{macrocode}
   \newcommand*\pIIe@maxovalrad{}
