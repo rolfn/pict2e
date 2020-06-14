@@ -36,8 +36,5 @@ Recommended TDS locations:
    pict2e.cfg:                   tex/latex/[TEXDIST]/graphics.cfg
 ```
 
-For general installation advice, see
-http://www.tex.ac.uk/cgi-bin/texfaq2html?label=instpackages
-
 For bug reports use the GitHub repository: https://github.com/rolfn/pict2e/issues
 
