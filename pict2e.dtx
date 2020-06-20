@@ -23,7 +23,7 @@
 %
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[1999/12/01]
-\ProvidesPackage{pict2e}[2020/06/13 v0.3d Improved picture commands (HjG,RN,JT)]
+\ProvidesPackage{pict2e}[2020/06/20 v0.3e Improved picture commands (HjG,RN,JT)]
 %</package>
 %
 %<*driver>
@@ -63,9 +63,9 @@
 % \fi
 %
 % \GetFileInfo{pict2e.sty}
-% \def\docdate{2020/06/13}
+% \def\docdate{2020/06/20}
 %
-% \CheckSum{2157}
+% \CheckSum{2206}
 %
 % ^^A ========
 %
@@ -188,6 +188,8 @@
 % \changes{v0.2z}{2014/01/12}{Conflict wit epic, eepic solved. (JT)}
 % \changes{v0.3a}{2016/01/09}{Local line types, documentation fixes. (JT)}
 % \changes{v0.3d}{2020/06/13}{\cmd{\@sline} renamed \cmd{\pIIe@sline} (RN)}
+% \changes{v0.3e}{2020/06/20}{Added \cmd{\Vector}, \cmd{\polyvector}
+%   suggested by FMi (RN)}
 % \fi
 %
 % \changes{v0.1a}{2003/07/18}{First version. (RN)}
@@ -1284,26 +1286,32 @@
 % An equivalent \cmd{\pIIearc} to \cmd{\arc} is defined to solve possible
 % conflicts with other packages.
 %
-% \subsubsection{Lines, polygons}
+% \subsubsection{Line, Vector, polyline, polyvector, and polygon}
 % \label{sec:usage:lines+polygons}
 %
 % \DescribeMacro\Line
 % \DescribeMacro\polyline
+% \DescribeMacro\Vector
+% \DescribeMacro\polyvector
 % \DescribeMacro\polygon
 % \DescribeMacro{\polygon*}
 %  |\Line|\parg{X1,Y1}\parg{X2,Y2}\\
 %  |\polyline|\parg{X1,Y1}\parg{X2,Y2}\dots\parg{Xn,Yn}\\
+%  |\Vector|\parg{X1,Y1}\parg{X2,Y2}\\
+%  |\polyvector|\parg{X1,Y1}\parg{X2,Y2}\dots\parg{Xn,Yn}\\
 %  |\polygon|\parg{X1,Y1}\parg{X2,Y2}\dots\parg{Xn,Yn}\\
 %  |\polygon*|\parg{X1,Y1}\parg{X2,Y2}\dots\parg{Xn,Yn}\\
 % A natural way how to describe a line segment is to give the coordinates of
-% the endpoints. The syntax of the \cmd{\line} is different because
+% the endpoints. The syntax of the \cmd{\line}/\cmd{\vector} is different
+% because
 % the lines in the standard \texttt{picture} environment are made from small
 % line segments of a limited number of slopes given in a font. However, this
 % package changes the \cmd{\line} command computing the coordinates of the
 % endpoints and using an internal macro for drawing a line segment with given
 % endpoints. Hence it would be crazy do not use this possibility directly.
-% This is done by the command \cmd{\Line}. The command \cmd{\polyline} draws a
-% stroken line connecting points with given coordinates. The command
+% This is done by the commands \cmd{\Line} and \cmd{\Vector}. The commands
+% \cmd{\polyline} and \cmd{\polyvector} draws a
+% stroken line/vector connecting points with given coordinates. The command
 % \cmd{\polygon} draws a polygon with given vertices, the star variant gives
 % filled polygon. At least two points should be given.
 %
@@ -2203,7 +2211,7 @@
 % \]
 % and $t = x/s$  and  $\tau = 2(t-1/2)$.
 % \end{quote}
-% \changes{v0.2r}{2005/07/15}{Two wrong global assignment changed. (RN)}
+% \changes{v0.2r}{2005/07/15}{Two wrong global assignments changed. (RN)}
 %    \begin{macrocode}
   \newcommand*\pIIe@pyth[3]{%
     \begingroup
@@ -2499,11 +2507,13 @@
       \pIIe@divide{\@tempdimb}\dimen@\@ydim
       \pIIe@divide{\@tempdima}\dimen@\@xdim
 %    \end{macrocode}
-% Rotate the following vector\slash arrow outlines by angle $\theta$.
+% Rotate the following vector\slash arrow outlines by angle $\theta$:\par
+% \BigIndent
+% $\cos{\theta}$\quad$\sin{\theta}$\quad$-\sin{\theta}$\quad$\cos{\theta}$\quad $0\quad 0$ 
 %    \begin{macrocode}
       \pIIe@concat\@xdim\@ydim{-\@ydim}\@xdim\z@\z@
 %    \end{macrocode}
-% Internal command to draw the outline of the vector\slash arrow.
+% Internal command to draw the outline of the vector\slash arrow. 
 %    \begin{macrocode}
       \pIIe@vector
       \pIIe@fillGraph
@@ -3196,15 +3206,14 @@
 % We abuse \cmd{\@setfpsbit} from the float processing modules of the
 % kernel.
 % ^^A (Should this go to section low-level?)
-% \begin{macrocode}
+%    \begin{macrocode}
   \newcommand*\pIIe@get@quadrants[1]{%
     \@ovttrue \@ovbtrue \@ovltrue \@ovrtrue \@tempcnta\z@
     \@tfor\reserved@a:=#1\do{\csname @ov\reserved@a false\endcsname}%
     \if@ovr \if@ovb\@setfpsbit2\fi \if@ovt\@setfpsbit4\fi \fi
     \if@ovl \if@ovb\@setfpsbit1\fi \if@ovt\@setfpsbit8\fi \fi}
-% \end{macrocode}
+%    \end{macrocode}
 % \end{macro}
-%
 % \subsubsection{Quadratic Bezier Curve}
 % \label{sec:implementation:bezier-curves}
 %
@@ -3259,7 +3268,6 @@
     \fi}
 %    \end{macrocode}
 % \end{macro}
-%
 % \begin{macro}{\pIIe@bezier@QtoC}
 % \changes{v0.1u}{2003/11/21}{New ancillary macro (HjG)}
 % Ancillary macro; saves us some tokens above.
@@ -3271,10 +3279,10 @@
 % \noindent
 % (Missing: Reference for mathematical formula. Or is this trivial?)
 %    \begin{macrocode}
-    \newcommand*\pIIe@bezier@QtoC[3]{%
-      \@tempdimc#1\relax      \advance\@tempdimc-#2\relax
-      \divide\@tempdimc\thr@@ \advance\@tempdimc #2\relax
-      #3\@tempdimc}
+  \newcommand*\pIIe@bezier@QtoC[3]{%
+    \@tempdimc#1\relax      \advance\@tempdimc-#2\relax
+    \divide\@tempdimc\thr@@ \advance\@tempdimc #2\relax
+    #3\@tempdimc}
 %    \end{macrocode}
 % \end{macro}
 %
@@ -3404,13 +3412,17 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \subsubsection{Lines and polygons}
-% \label{sec:implementation:lines-polygons}
+% \subsubsection{Line, Vector, polyline, polyvector, and polygon}
+% \label{sec:implementation:polyline-polyvector}
 %
+% \changes{v0.3e}{2020/06/20}{Added \cmd{\Vector} and \cmd{\polyvector}
+%   suggested by FMi. (RN)}
 % \begin{macro}{\Line}
 % \begin{macro}{\polyline}
+% \begin{macro}{\Vector}
+% \begin{macro}{\polyvector}
 % \begin{macro}{\polygon}
-% We use recursive macros for \cmd{\polyline} and \cmd{\polygon}.
+% We use recursive macros for \cmd{\polyline}, \cmd{\polyvector}, and \cmd{\polygon}.
 %    \begin{macrocode}
   \let\lp@r( \let\rp@r)
   \def\Line(#1,#2)(#3,#4){\polyline(#1,#2)(#3,#4)}
@@ -3423,6 +3435,33 @@
   \def\@polyline(#1,#2){%
     \pIIe@lineto{#1\unitlength}{#2\unitlength}%
     \@ifnextchar\lp@r{\@polyline}{\pIIe@strokeGraph\ignorespaces}}
+  \def\Vector(#1,#2)(#3,#4){\polyvector(#1,#2)(#3,#4)}
+  \def\polyvector(#1,#2){%
+    \@killglue
+    \@ifnextchar\lp@r{\begingroup\@polyvector(#1,#2)}{%
+      \PackageWarning{pict2e}%
+      {Polygonal vectors require at least two vertices!}\ignorespaces}}
+  \def\@polyvector(#1,#2)(#3,#4){%
+%    \end{macrocode}
+% See the similar definition for \cmd{\vector} (\ref{{sec:implementation:vector}})
+%    \begin{macrocode}
+    \@xdim#1\unitlength \@tempdima=#3\unitlength 
+    \@ydim#2\unitlength \@tempdimb=#4\unitlength 
+    \advance\@tempdima-\@xdim \advance\@tempdimb-\@ydim
+    \ifdim\@tempdima=\z@ \@linelen\@tempdimb \else
+      \ifdim\@tempdimb=\z@ \@linelen\@tempdima \else
+        \pIIe@pyth\@tempdima\@tempdimb\@linelen
+      \fi
+    \fi
+    \ifdim\@linelen<\z@ \@linelen-\@linelen\fi
+    \pIIe@divide{\@tempdima}\@linelen\@ovxx
+    \pIIe@divide{\@tempdimb}\@linelen\@ovyy
+%    \end{macrocode}
+% Note the shift to the previous point in addition to the rotation.
+%    \begin{macrocode}
+    \pIIe@concat\@ovxx\@ovyy{-\@ovyy}\@ovxx\@xdim\@ydim
+    \pIIe@vector \pIIe@fillGraph 
+    \@ifnextchar\lp@r{\@polyvector(#3,#4)}{\endgroup\ignorespaces}}
   \def\polygon{%
     \@killglue
     \@ifstar{\begingroup\@tempswatrue\@polygon}%
@@ -3438,6 +3477,8 @@
       \endgroup
       \ignorespaces}}
 %    \end{macrocode}
+% \end{macro}
+% \end{macro}
 % \end{macro}
 % \end{macro}
 % \end{macro}
