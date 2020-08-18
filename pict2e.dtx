@@ -3059,16 +3059,12 @@
 % \cite[p.~223]{LAMPORT} does not specify explicitly whether the
 % \oarg{rad} argument should be given in terms of \cmd{\unitlength} or
 % as an absolute length.
-% To implement this feature, we borrow from the \textsf{graphics}
-% package:
-% See \cmd{\Gin@defaultbp} and \cmd{\Gin@def@bp} from
-% \texttt{graphics.dtx}.
+% This is now re-implemented in terms of \cmd{@defaultunitsset}.
 %    \begin{macrocode}
   \newcommand*\pIIe@defaultUL[2]{%
-    \afterassignment\pIIe@def@UL\dimen@#2\unitlength\relax{#1}{#2}}
+    \@defaultunitsset\dimen@{#2}\unitlength
+    \edef#1{\the\dimen@}}
 %    \end{macrocode}
-% However, things are simpler in our case, since we always need the
-% value stored in \cmd{\dimen@}.
 % Hence, we could\slash should omit the unnecessary argument!?)
 % \changes{v0.2h}{2004/01/07}{Check for negative or zero radius
 %     argument (RN,HjG)}
