@@ -23,7 +23,7 @@
 %
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[1999/12/01]
-\ProvidesPackage{pict2e}[2020/06/20 v0.3e Improved picture commands (HjG,RN,JT)]
+\ProvidesPackage{pict2e}[2020/08/16 v0.4a Improved picture commands (HjG,RN,JT)]
 %</package>
 %
 %<*driver>
@@ -63,9 +63,8 @@
 % \fi
 %
 % \GetFileInfo{pict2e.sty}
-% \def\docdate{2020/06/20}
+% \def\docdate{2020/08/16}
 %
-% \CheckSum{2206}
 %
 % ^^A ========
 %
@@ -190,6 +189,7 @@
 % \changes{v0.3d}{2020/06/13}{\cmd{\@sline} renamed \cmd{\pIIe@sline} (RN)}
 % \changes{v0.3e}{2020/06/20}{Added \cmd{\Vector}, \cmd{\polyvector}
 %   suggested by FMi (RN)}
+% \changes{v0.4a}{2020/08/16}{Default lengths to match extended \LaTeX\ version}
 % \fi
 %
 % \changes{v0.1a}{2003/07/18}{First version. (RN)}
@@ -1501,6 +1501,27 @@
 %
 % \subsection{Preliminaries}
 %
+% \begin{macro}{\@defaultunitsset}
+% Command to accept a number or length expression.
+% Added to \LaTeX\ 2020-10-01 release but provided here for older releases.
+%
+% Set a length register, |#1|,
+% accepting number or an etex length expression, |#2|,
+% with default unit, |#3|.
+%
+% |#3| can be a literal unit such as |cm| or a length register such
+% as |\unitlength|.
+%
+% This is used in all |picture| commands that take picture coordinates.
+% So |\put(2,2)| as previously but now |\put(\textwidth-5cm,0.4\texteight)|
+% Note that you can only use expressions with lengths, |\put(1+2,0)| is not
+% supported.
+%    \begin{macrocode}
+\def\@defaultunitsset#1#2#3{%
+  \@defaultunits#1\dimexpr#2#3\relax\relax\@nnil}
+%    \end{macrocode}
+% \end{macro}
+%
 % \begin{macro}{\pIIe@mode}
 % \begin{macro}{\pIIe@code}
 % \begin{macro}{\Gin@driver}
@@ -2412,7 +2433,7 @@
     \begingroup
     \pIIe@checkslopeargsline{#1}{#2}%
     \@tempdima=#1pt\relax \@tempdimb=#2pt\relax
-    \@linelen #3\unitlength
+    \@defaultunitsset\@linelen{#3}\unitlength
     \ifdim\@linelen<\z@ \@badlinearg \else
       \pIIe@sline
       \pIIe@moveto\z@\z@
@@ -2485,10 +2506,10 @@
     \begingroup
     \pIIe@checkslopeargsvector{#1}{#2}%
     \@tempdima=#1pt\relax \@tempdimb=#2pt\relax
-    \@linelen#3\unitlength
+    \@defaultunitsset\@linelen{#3}\unitlength
     \ifdim\@linelen<\z@ \@badlinearg \else
       \pIIe@sline
-      \@linelen#3\unitlength
+      \@defaultunitsset\@linelen{#3}\unitlength
       \pIIe@pyth{\@tempdima}{\@tempdimb}\dimen@
       \ifdim\@tempdima=\z@ \else
         \ifdim\@tempdimb=\z@ \else
@@ -2871,7 +2892,7 @@
 %     argument (RN,HjG)}
 % \changes{v0.2n}{2004/04/22}{Allow zero diameter (RN/HjG)}
 %    \begin{macrocode}
-      \@tempdima#1\unitlength
+      \@defaultunitsset\@tempdima{#1}\unitlength
       \ifdim\@tempdima<\z@ \pIIe@badcircarg \fi
       \divide\@tempdima\tw@
       \pIIe@circle\@tempdima
@@ -3038,16 +3059,12 @@
 % \cite[p.~223]{LAMPORT} does not specify explicitly whether the
 % \oarg{rad} argument should be given in terms of \cmd{\unitlength} or
 % as an absolute length.
-% To implement this feature, we borrow from the \textsf{graphics}
-% package:
-% See \cmd{\Gin@defaultbp} and \cmd{\Gin@def@bp} from
-% \texttt{graphics.dtx}.
+% This is now re-implemented in terms of \cmd{@defaultunitsset}.
 %    \begin{macrocode}
   \newcommand*\pIIe@defaultUL[2]{%
-    \afterassignment\pIIe@def@UL\dimen@#2\unitlength\relax{#1}{#2}}
+    \@defaultunitsset\dimen@{#2}\unitlength
+    \edef#1{\the\dimen@}}
 %    \end{macrocode}
-% However, things are simpler in our case, since we always need the
-% value stored in \cmd{\dimen@}.
 % Hence, we could\slash should omit the unnecessary argument!?)
 % \changes{v0.2h}{2004/01/07}{Check for negative or zero radius
 %     argument (RN,HjG)}
@@ -3103,8 +3120,8 @@
 %    \end{macrocode}
 % In analogy to circles, we need only half of the size value.
 %    \begin{macrocode}
-    \@ovxx#1\unitlength \divide\@ovxx\tw@
-    \@ovyy#2\unitlength \divide\@ovyy\tw@
+    \@defaultunitsset\@ovxx{#1}\unitlength \divide\@ovxx\tw@
+    \@defaultunitsset\@ovyy{#2}\unitlength \divide\@ovyy\tw@
     \@tempdimc \ifdim\@ovyy>\@ovxx \@ovxx \else \@ovyy \fi
     \ifdim\pIIe@maxovalrad<\@tempdimc \@tempdimc\pIIe@maxovalrad\relax \fi
 %    \end{macrocode}
@@ -3238,9 +3255,12 @@
 %    \begin{macrocode}
       \@killglue
       \begingroup
-      \@ovxx#2\unitlength \@ovyy#3\unitlength
-      \@ovdx#4\unitlength \@ovdy#5\unitlength
-      \@xdim#6\unitlength \@ydim#7\unitlength
+      \@defaultunitsset\@ovxx{#2}\unitlength
+      \@defaultunitsset\@ovyy{#3}\unitlength
+      \@defaultunitsset\@ovdx{#4}\unitlength
+      \@defaultunitsset\@ovdy{#5}\unitlength
+      \@defaultunitsset\@xdim{#6}\unitlength
+      \@defaultunitsset\@ydim{#7}\unitlength
 %    \end{macrocode}
 % \noindent
 % \BigIndent $P_1 = P_m + 1/3 (P_0 - P_m)$
@@ -3398,10 +3418,12 @@
   \def\pIIe@arc@@(#1,#2)#3{%
     \if@tempswa
       \pIIe@moveto\z@\z@
-      \pIIe@arc{\z@}{\z@}{#3\unitlength}{#1}{#2}%
+      \@defaultunitsset\@tempdimc{#3}\unitlength
+      \pIIe@arc{\z@}{\z@}{\@tempdimc}{#1}{#2}%
       \pIIe@closepath\pIIe@fillGraph
     \else
-      \pIIe@arc[1]{\z@}{\z@}{#3\unitlength}{#1}{#2}%
+      \@defaultunitsset\@tempdimc{#3}\unitlength
+      \pIIe@arc[1]{\z@}{\z@}{\@tempdimc}{#1}{#2}%
       \pIIe@strokeGraph
     \fi}
   \ifx\undefined\arc
@@ -3428,12 +3450,16 @@
   \def\Line(#1,#2)(#3,#4){\polyline(#1,#2)(#3,#4)}
   \def\polyline(#1,#2){%
     \@killglue
-    \pIIe@moveto{#1\unitlength}{#2\unitlength}%
+    \@defaultunitsset\@tempdimc{#1}\unitlength
+    \@defaultunitsset\@tempdimb{#2}\unitlength
+    \pIIe@moveto{\@tempdimc}{\@tempdimb}%
     \@ifnextchar\lp@r{\@polyline}{\PackageWarning{pict2e}%
       {Polygonal lines require at least two vertices!}%
     \ignorespaces}}
   \def\@polyline(#1,#2){%
-    \pIIe@lineto{#1\unitlength}{#2\unitlength}%
+    \@defaultunitsset\@tempdimc{#1}\unitlength
+    \@defaultunitsset\@tempdimb{#2}\unitlength
+    \pIIe@lineto{\@tempdimc}{\@tempdimb}%
     \@ifnextchar\lp@r{\@polyline}{\pIIe@strokeGraph\ignorespaces}}
   \def\Vector(#1,#2)(#3,#4){\polyvector(#1,#2)(#3,#4)}
   \def\polyvector(#1,#2){%
@@ -3445,8 +3471,10 @@
 %    \end{macrocode}
 % See the similar definition for \cmd{\vector} (\ref{sec:implementation:vector})
 %    \begin{macrocode}
-    \@xdim#1\unitlength \@tempdima=#3\unitlength 
-    \@ydim#2\unitlength \@tempdimb=#4\unitlength 
+    \@defaultunitsset\@xdim{#1}\unitlength
+    \@defaultunitsset\@tempdima{#3}\unitlength 
+    \@defaultunitsset\@ydim{#2}\unitlength
+    \@defaultunitsset\@tempdimb{#4}\unitlength 
     \advance\@tempdima-\@xdim \advance\@tempdimb-\@ydim
     \ifdim\@tempdima=\z@ \@linelen\@tempdimb \else
       \ifdim\@tempdimb=\z@ \@linelen\@tempdima \else
@@ -3467,11 +3495,16 @@
     \@ifstar{\begingroup\@tempswatrue\@polygon}%
       {\begingroup\@tempswafalse\@polygon}}
   \def\@polygon(#1,#2){%
-    \pIIe@moveto{#1\unitlength}{#2\unitlength}%
+    \@defaultunitsset\@tempdimc{#1}\unitlength
+    \@defaultunitsset\@tempdimb{#2}\unitlength
+    \pIIe@moveto{\@tempdimc}{\@tempdimb}%
     \@ifnextchar\lp@r{\@@polygon}{\PackageWarning{pict2e}%
       {Polygons require at least two vertices!}%
     \ignorespaces}}
-  \def\@@polygon(#1,#2){\pIIe@lineto{#1\unitlength}{#2\unitlength}%
+  \def\@@polygon(#1,#2){%
+    \@defaultunitsset\@tempdimc{#1}\unitlength
+    \@defaultunitsset\@tempdimb{#2}\unitlength
+    \pIIe@lineto{\@tempdimc}{\@tempdimb}%
     \@ifnextchar\lp@r{\@@polygon}{\pIIe@closepath
       \if@tempswa\pIIe@fillGraph\else\pIIe@strokeGraph\fi
       \endgroup
@@ -3497,20 +3530,33 @@
 %    \begin{macrocode}
   \def\moveto(#1,#2){%
     \@killglue
-    \pIIe@moveto{#1\unitlength}{#2\unitlength}%
+    \@defaultunitsset\@tempdimc{#1}\unitlength
+    \@defaultunitsset\@tempdimb{#2}\unitlength
+    \pIIe@moveto{\@tempdimc}{\@tempdimb}%
     \ignorespaces}
   \def\lineto(#1,#2){%
     \@killglue
-    \pIIe@lineto{#1\unitlength}{#2\unitlength}%
+    \@defaultunitsset\@tempdimc{#1}\unitlength
+    \@defaultunitsset\@tempdimb{#2}\unitlength
+    \pIIe@lineto{\@tempdimc}{\@tempdimb}%
     \ignorespaces}
   \def\curveto(#1,#2)(#3,#4)(#5,#6){%
     \@killglue
-    \pIIe@curveto{#1\unitlength}{#2\unitlength}{#3\unitlength}{#4\unitlength}%
-      {#5\unitlength}{#6\unitlength}%
+    \@defaultunitsset\@tempdimc{#1}\unitlength
+    \@defaultunitsset\@tempdimb{#2}\unitlength
+    \@defaultunitsset\@tempdima{#3}\unitlength
+    \@defaultunitsset\dimen@{#4}\unitlength
+    \@defaultunitsset\@ovxx{#5}\unitlength
+    \@defaultunitsset\@ovyy{#6}\unitlength
+    \pIIe@curveto{\@tempdimc}{\@tempdimb}{\@tempdima}{\dimen@}%
+      {\@ovxx}{\@ovyy}%
     \ignorespaces}
   \newcommand*\circlearc[6][0]{%
     \@killglue
-    \pIIe@arc[#1]{#2\unitlength}{#3\unitlength}{#4\unitlength}{#5}{#6}%
+    \@defaultunitsset\@tempdimc{#2}\unitlength
+    \@defaultunitsset\@tempdimb{#3}\unitlength
+    \@defaultunitsset\@tempdima{#4}\unitlength
+    \pIIe@arc[#1]{\@tempdimc}{\@tempdimb}{\@tempdima}{#5}{#6}%
     \ignorespaces}
   \def\closepath{\pIIe@closepath}
   \def\strokepath{\pIIe@strokeGraph}
@@ -3596,9 +3642,17 @@
     \def\pIIe@@cbezier#1)#2(#3)#4(#5)#6({\@cbezier#1)(#3)(#5)(}%
     \def\@cbezier[#1](#2,#3)(#4,#5)(#6,#7)(#8,#9){%
       \@killglue
-      \pIIe@moveto{#2\unitlength}{#3\unitlength}%
-      \pIIe@curveto{#4\unitlength}{#5\unitlength}%
-        {#6\unitlength}{#7\unitlength}{#8\unitlength}{#9\unitlength}%
+      \@defaultunitsset\@tempdimc{#2}\unitlength
+      \@defaultunitsset\@tempdimb{#3}\unitlength
+      \pIIe@moveto{\@tempdimc}{\@tempdimb}%
+      \@defaultunitsset\@tempdimc{#4}\unitlength
+      \@defaultunitsset\@tempdimb{#5}\unitlength
+      \@defaultunitsset\@tempdima{#6}\unitlength
+      \@defaultunitsset\dimen@{#7}\unitlength
+      \@defaultunitsset\@ovxx{#8}\unitlength
+      \@defaultunitsset\@ovyy{#9}\unitlength
+      \pIIe@curveto{\@tempdimc}{\@tempdimb}%
+        {\@tempdima}{\dimen@}{\@ovxx}{\@ovyy}%
       \pIIe@strokeGraph
       \ignorespaces}%
   }
